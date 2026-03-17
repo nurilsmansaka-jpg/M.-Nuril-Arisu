@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>portofolio Html— Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #080808;
+      --deep: #0e0e0e;
+      --surface: #141414;
+      --card: #1a1a1a;
+      --border: #2a2a2a;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim: rgba(201,168,76,0.15);
+      --white: #f5f0e8;
+      --muted: #888;
+      --text: #d4cfc5;
+    }
+
+    html, body { height: 100%; background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow: hidden; }
+
+    #loading { position: fixed; inset: 0; z-index: 1000; background: var(--black); display: flex; align-items: center; justify-content: center; transition: opacity 0.8s ease, visibility 0.8s; }
+    #loading.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .load-text { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 300; color: var(--gold); letter-spacing: 0.3em; animation: loadPulse 1.5s ease-in-out infinite; }
+    @keyframes loadPulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    #app { display: flex; height: 100vh; width: 100vw; }
+
+    #sidebar { width: 220px; min-width: 220px; background: var(--deep); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 40px 0; position: relative; z-index: 10; }
+    .sidebar-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; color: var(--white); letter-spacing: 0.08em; padding: 0 28px 32px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+    .sidebar-logo span { color: var(--gold); }
+
+    .nav-btn { display: flex; align-items: center; gap: 14px; padding: 14px 28px; background: none; border: none; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; cursor: pointer; transition: all 0.3s; text-align: left; position: relative; }
+    .nav-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--gold); transform: scaleY(0); transition: transform 0.3s; }
+    .nav-btn:hover { color: var(--white); background: rgba(255,255,255,0.03); }
+    .nav-btn.active { color: var(--gold); background: var(--gold-dim); }
+    .nav-btn.active::before { transform: scaleY(1); }
+    .nav-icon { font-size: 1rem; opacity: 0.7; }
+    .sidebar-footer { margin-top: auto; padding: 20px 28px 0; border-top: 1px solid var(--border); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+    #main { flex: 1; overflow: hidden; position: relative; }
+    #main::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; opacity: 0.3; }
+
+    .page { position: absolute; inset: 0; overflow-y: auto; padding: 60px; opacity: 0; transform: translateX(30px); pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease; }
+    .page.active { opacity: 1; transform: translateX(0); pointer-events: all; }
+
+    .section-label { display: inline-flex; align-items: center; gap: 10px; font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+    .section-label::before { content: ''; width: 20px; height: 1px; background: var(--gold); }
+    h2.heading { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 4vw, 4rem); font-weight: 300; color: var(--white); line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 40px; }
+    h2.heading em { font-style: italic; color: var(--gold); }
+
+    #page-home { display: flex; flex-direction: column; justify-content: center; min-height: 100%; background: radial-gradient(ellipse 80% 60% at 70% 50%, rgba(201,168,76,0.06) 0%, transparent 60%); }
+    .hero-tag { display: inline-flex; align-items: center; gap: 10px; font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; }
+    .hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--gold); }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(3.5rem, 8vw, 8rem); font-weight: 300; line-height: 1; color: var(--white); letter-spacing: -0.02em; }
+    .hero-title em { font-style: italic; color: var(--gold); }
+    .hero-subtitle { font-size: 1rem; color: var(--muted); margin-top: 20px; max-width: 480px; line-height: 1.8; }
+    .hero-actions { display: flex; gap: 12px; margin-top: 44px; flex-wrap: wrap; }
+
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: var(--gold); color: var(--black); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; border: none; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+    .btn-outline { display: inline-flex; align-items: center; gap: 10px; padding: 14px 32px; background: none; color: var(--gold); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--gold); cursor: pointer; transition: all 0.3s; }
+    .btn-outline:hover { background: var(--gold-dim); }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+    .about-text p { color: var(--muted); margin-top: 16px; font-size: 1rem; line-height: 1.9; }
+    .stats-row { display: flex; gap: 40px; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 32px; flex-wrap: wrap; }
+    .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-weight: 300; color: var(--white); line-height: 1; }
+    .stat-num span { color: var(--gold); }
+    .stat-lbl { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+    .about-image-wrap { position: relative; }
+    .about-image-wrap::before { content: ''; position: absolute; top: -14px; left: -14px; right: 14px; bottom: 14px; border: 1px solid var(--border); z-index: 0; }
+    .about-image-wrap::after { content: ''; position: absolute; bottom: -14px; right: -14px; left: 14px; top: 14px; background: var(--gold-dim); z-index: 0; }
+    .about-img { width: 100%; aspect-ratio: 3/4; object-fit: cover; position: relative; z-index: 1; filter: grayscale(20%) contrast(1.05); }
+
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .skill-item { background: var(--surface); padding: 36px 28px; border: 1px solid var(--border); position: relative; overflow: hidden; transition: background 0.3s, border-color 0.3s; }
+    .skill-item::before { content: ''; position: absolute; bottom: 0; left: 0; height: 2px; width: 0; background: var(--gold); transition: width 0.4s; }
+    .skill-item:hover { background: var(--card); border-color: var(--gold); }
+    .skill-item:hover::before { width: 100%; }
+    .skill-num { font-family: 'Cormorant Garamond', serif; font-size: 0.85rem; color: var(--gold); margin-bottom: 20px; opacity: 0.6; }
+    .skill-icon-wrap { font-size: 1.7rem; margin-bottom: 14px; transition: transform 0.3s; }
+    .skill-item:hover .skill-icon-wrap { transform: scale(1.1); }
+    .skill-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--white); font-weight: 300; margin-bottom: 8px; }
+    .skill-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.7; }
+
+    .port-filter { display: flex; gap: 4px; margin-bottom: 32px; flex-wrap: wrap; }
+    .filter-btn { background: none; border: 1px solid var(--border); color: var(--muted); padding: 7px 18px; font-family: 'DM Sans', sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+    .filter-btn.active, .filter-btn:hover { background: var(--gold); border-color: var(--gold); color: var(--black); }
+    .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .port-item { position: relative; overflow: hidden; aspect-ratio: 4/5; cursor: pointer; }
+    .port-item.wide { grid-column: span 2; aspect-ratio: 16/9; }
+    .port-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s; filter: grayscale(30%) brightness(0.85); }
+    .port-item:hover img { transform: scale(1.08); filter: grayscale(0%) brightness(0.7); }
+    .port-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 28px; opacity: 0; transition: opacity 0.4s; }
+    .port-item:hover .port-overlay { opacity: 1; }
+    .port-cat { font-size: 0.62rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+    .port-title-card { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--white); font-weight: 300; margin-bottom: 12px; }
+    .port-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .port-tag { font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.3); color: rgba(255,255,255,0.7); padding: 3px 8px; }
+
+    .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+    .testi-card { background: var(--surface); border: 1px solid var(--border); padding: 36px 28px; position: relative; overflow: hidden; transition: border-color 0.3s; }
+    .testi-card:hover { border-color: var(--gold-light); }
+    .testi-card::before { content: '"'; font-family: 'Cormorant Garamond', serif; font-size: 7rem; line-height: 1; color: var(--gold); opacity: 0.08; position: absolute; top: 8px; left: 24px; pointer-events: none; }
+    .testi-stars { color: var(--gold); font-size: 0.75rem; letter-spacing: 4px; margin-bottom: 20px; }
+    .testi-text { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-style: italic; color: var(--white); line-height: 1.8; font-weight: 300; }
+    .testi-author { display: flex; align-items: center; gap: 14px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .testi-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; filter: grayscale(30%); }
+    .testi-name { font-size: 0.88rem; color: var(--white); font-weight: 400; }
+    .testi-role { font-size: 0.68rem; color: var(--gold); margin-top: 2px; }
+
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: start; }
+    .contact-info p { color: var(--muted); margin-top: 20px; line-height: 1.9; }
+    .contact-details { margin-top: 36px; }
+    .contact-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .contact-lbl { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+    .contact-val { color: var(--white); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+    .contact-val:hover { color: var(--gold); }
+    .socials { display: flex; gap: 20px; margin-top: 32px; flex-wrap: wrap; }
+    .soc-link { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; position: relative; padding-bottom: 3px; }
+    .soc-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--gold); transition: width 0.3s; }
+    .soc-link:hover { color: var(--gold); }
+    .soc-link:hover::after { width: 100%; }
+    .contact-form { display: flex; flex-direction: column; gap: 0; }
+    .form-row { position: relative; margin-bottom: 16px; }
+    .form-row label { display: block; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .form-row input, .form-row textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--white); padding: 13px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem; outline: none; transition: border-color 0.3s; }
+    .form-row input:focus, .form-row textarea:focus { border-color: var(--gold); }
+    .form-row textarea { resize: vertical; min-height: 110px; }
+    .form-submit { margin-top: 8px; background: none; border: 1px solid var(--gold); color: var(--gold); padding: 15px 36px; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; align-self: flex-start; position: relative; overflow: hidden; }
+    .form-submit::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--gold); transition: left 0.4s; }
+    .form-submit:hover::before { left: 0; }
+    .form-submit span { position: relative; z-index: 1; transition: color 0.4s; }
+    .form-submit:hover span { color: var(--black); }
+
+    #topbar { display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 200; background: rgba(8,8,8,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 20px; height: 56px; align-items: center; justify-content: space-between; }
+    .topbar-logo { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--white); }
+    .topbar-logo span { color: var(--gold); }
+    .hamburger { display: flex; flex-direction: column; gap: 4px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .hamburger span { width: 20px; height: 1px; background: var(--white); display: block; transition: 0.3s; }
+    .mobile-drawer { display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; background: var(--black); z-index: 150; flex-direction: column; padding: 20px; gap: 4px; }
+    .mobile-drawer.open { display: flex; }
+    .mob-nav-btn { display: flex; align-items: center; gap: 14px; padding: 16px 20px; background: none; border: 1px solid transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; text-align: left; }
+    .mob-nav-btn.active { color: var(--gold); border-color: var(--border); background: var(--gold-dim); }
+    .mob-nav-btn:hover { color: var(--white); }
+
+    @media (max-width: 768px) {
+      #sidebar { display: none; }
+      #topbar { display: flex; }
+      .page { padding: 80px 20px 40px; }
+      .about-grid, .contact-grid { grid-template-columns: 1fr; }
+      .skills-grid, .testi-grid, .portfolio-grid { grid-template-columns: 1fr 1fr; }
+      .port-item.wide { grid-column: span 2; aspect-ratio: 16/9; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 480px) {
+      .skills-grid, .testi-grid, .portfolio-grid { grid-template-columns: 1fr; }
+      .port-item.wide { grid-column: span 1; aspect-ratio: 4/5; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loading"><div class="load-text">Welcome to my portofolio</div></div>
+
+<div id="topbar">
+  <div class="topbar-logo">Welcome to my <span>Portofolio</span></div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</div>
+
+<div class="mobile-drawer" id="mobileDrawer">
+  <button class="mob-nav-btn active" data-page="home" onclick="navigate('home')">🏠 Home</button>
+  <button class="mob-nav-btn" data-page="about" onclick="navigate('about')">👤 About</button>
+  <button class="mob-nav-btn" data-page="skills" onclick="navigate('skills')">⚡ Skills</button>
+  <button class="mob-nav-btn" data-page="portfolio" onclick="navigate('portfolio')">🖼️ Portfolio</button>
+  <button class="mob-nav-btn" data-page="testimonials" onclick="navigate('testimonials')">💬 Clients</button>
+  <button class="mob-nav-btn" data-page="contact" onclick="navigate('contact')">✉️ Contact</button>
+</div>
+
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-logo">Muhammad <span>Nuril</span></div>
+    <button class="nav-btn active" data-page="home" onclick="navigate('home')"><span class="nav-icon">🏠</span> Home</button>
+    <button class="nav-btn" data-page="about" onclick="navigate('about')"><span class="nav-icon">👤</span> About</button>
+    <button class="nav-btn" data-page="skills" onclick="navigate('skills')"><span class="nav-icon">⚡</span> Skills</button>
+    <button class="nav-btn" data-page="portfolio" onclick="navigate('portfolio')"><span class="nav-icon">🖼️</span> Portfolio</button>
+    <button class="nav-btn" data-page="testimonials" onclick="navigate('testimonials')"><span class="nav-icon">💬</span> Clients</button>
+    <button class="nav-btn" data-page="contact" onclick="navigate('contact')"><span class="nav-icon">✉️</span> Contact</button>
+    <div class="sidebar-footer">© 2026 Muhammad Nuril</div>
+  </aside>
+
+  <main id="main">
+
+    <!-- HOME -->
+    <section class="page active" id="page-home">
+      <div class="hero-tag">Full-Stack Developer</div>
+      <h1 class="hero-title">Muhammad<br><em>Nuril</em></h1>
+      <p class="hero-subtitle">Saya Muhammad Nuril Yang Menciptakan Berbagai Pengalaman Digital Yang Luar Biasa Melalui Desain Yang Cermat Dan Solusi Inovatif.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="navigate('portfolio')">View Projects →</button>
+        <button class="btn-outline" onclick="navigate('contact')">Hubungi Saya</button>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="page" id="page-about">
+      <div class="section-label">About Me</div>
+      <h2 class="heading">Tentang <em>Saya</em></h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>Saya adalah seorang pelajar SMA NEGERI 1 KALIANDA yang bersemangat dengan pengalaman baru-baru ini dibidang pemograman: Python, C++, Html, CSS Style, dan Javascript. Saya tertarik pada mapel Ekonomi dan Informatika, untuk pengalaman saya bergabung ekskul Basketball dan English Club. Hobi saya mempelajari komputer dan bermain basket.</p>
+          <p style="margin-top:14px">Saya percaya dengan semangat belajar yang tinggi, saya berharap dapat mengembangkan kemampuan dibidang IT dan menggunakan pengetahuan tersebut untuk menciptakan solusi yang bermanfaat bagi banyak orang.</p>
+          <p style="margin-top:14px;font-style:italic;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1.1rem;">"Setiap hari adalah kesempatan untuk menjadi pribadi yang lebih baik dari hari sebelumnya."</p>
+          <div class="stats-row">
+            <div class="stat-item"><div class="stat-num">10<span>+</span></div><div class="stat-lbl">Projects</div></div>
+            <div class="stat-item"><div class="stat-num">2<span>+</span></div><div class="stat-lbl">Tahun Pengalaman</div></div>
+            <div class="stat-item"><div class="stat-num">3<span>+</span></div><div class="stat-lbl">Klien</div></div>
+          </div>
+        </div>
+        <div class="about-image-wrap">
+          <img src="foto_nuril.jpeg" alt="Muhammad Nuril" class="about-img">
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="page" id="page-skills">
+      <div class="section-label">Expertise</div>
+      <h2 class="heading">Skills &amp; <em>Capabilities</em></h2>
+      <div class="skills-grid">
+        <div class="skill-item"><div class="skill-num">01</div><div class="skill-icon-wrap">🎨</div><div class="skill-name">Design</div><p class="skill-desc">UI/UX Design, Visual Identity, Brand Strategy</p></div>
+        <div class="skill-item"><div class="skill-num">02</div><div class="skill-icon-wrap">💻</div><div class="skill-name">Development</div><p class="skill-desc">Frontend Development, Responsive Design, Performance</p></div>
+        <div class="skill-item"><div class="skill-num">03</div><div class="skill-icon-wrap">📱</div><div class="skill-name">Mobile</div><p class="skill-desc">Mobile-First Design, Progressive Web Apps</p></div>
+        <div class="skill-item"><div class="skill-num">04</div><div class="skill-icon-wrap">🚀</div><div class="skill-name">Strategy</div><p class="skill-desc">Product Strategy, User Research, Analytics</p></div>
+        <div class="skill-item"><div class="skill-num">05</div><div class="skill-icon-wrap">🎯</div><div class="skill-name">Marketing</div><p class="skill-desc">Digital Marketing, SEO, Content Strategy</p></div>
+        <div class="skill-item"><div class="skill-num">06</div><div class="skill-icon-wrap">⚡</div><div class="skill-name">Optimization</div><p class="skill-desc">Performance Optimization, A/B Testing</p></div>
+      </div>
+    </section>
+
+    <!-- PORTFOLIO -->
+    <section class="page" id="page-portfolio">
+      <div class="section-label">Selected Work</div>
+      <h2 class="heading">Prestasi &amp; <em>Projects</em></h2>
+      <div class="port-filter">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="Prestasi">Prestasi</button>
+        <button class="filter-btn" data-filter="mobile">Mobile</button>
+        <button class="filter-btn" data-filter="branding">Branding</button>
+      </div>
+      <div class="portfolio-grid" id="portGrid">
+        <div class="port-item wide" data-cat="web"><img src="medali_ipb.jpeg" alt="medali ipb"><div class="port-overlay"><div class="port-cat">Penghargaan</div><div class="port-title-card">Medali IPB</div><div class="port-tags"><span class="port-tag">UI/UX</span><span class="port-tag">Frontend</span></div></div></div>
+        <div class="port-item" data-cat="My music"><img src="foto_spotify.jpeg" alt="foto spotify"><div class="port-overlay"><div class="port-cat">My Music</div><div class="port-title-card">Lihat Kebunku (jeje)</div><div class="port-tags"><span class="port-tag">Music</span><span class="port-tag">Favorite</span></div></div></div>
+        <div class="port-item" data-cat="branding"><img src="https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?w=500&auto=format&fit=crop&q=80" alt="Brand Identity"><div class="port-overlay"><div class="port-cat">Branding</div><div class="port-title-card">Brand Identity</div><div class="port-tags"><span class="port-tag">Branding</span><span class="port-tag">Identity</span></div></div></div>
+        <div class="port-item" data-cat="web"><img src="https://images.unsplash.com/photo-1587382926858-4a0dd19eb252?w=500&auto=format&fit=crop&q=80" alt="Corporate Website"><div class="port-overlay"><div class="port-cat">Web Design</div><div class="port-title-card">Corporate Site</div><div class="port-tags"><span class="port-tag">Web</span><span class="port-tag">CMS</span></div></div></div>
+        <div class="port-item" data-cat="mobile"><img src="https://images.unsplash.com/photo-1511296933631-18b1a062212c?w=500&auto=format&fit=crop&q=80" alt="Food Delivery"><div class="port-overlay"><div class="port-cat">Mobile</div><div class="port-title-card">Food Delivery App</div><div class="port-tags"><span class="port-tag">Mobile</span><span class="port-tag">UX</span></div></div></div>
+        <div class="port-item" data-cat="branding"><img src="https://plus.unsplash.com/premium_photo-1683798464819-d1376249293e?w=500&auto=format&fit=crop&q=80" alt="Packaging"><div class="port-overlay"><div class="port-cat">Branding</div><div class="port-title-card">Product Packaging</div><div class="port-tags"><span class="port-tag">Packaging</span><span class="port-tag">Print</span></div></div></div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="page" id="page-testimonials">
+      <div class="section-label">Testimonials</div>
+      <h2 class="heading">What <em>Clients</em> Say</h2>
+      <div class="testi-grid">
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"Kualitas pekerjaan sangat luar biasa, proyek selesai tepat waktu."</p><div class="testi-author"><img src="foto_koko.jpeg" alt="foto koko" class="testi-img"><div><div class="testi-name">Yap Ferdy</div><div class="testi-role">Student SMAN 1 KALIANDA</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"Profesional, kreatif, hasil yang sangat bagus."</p><div class="testi-author"><img src="foto_harry.jpeg" alt="foto harry" class="testi-img"><div><div class="testi-name">Harry Syahputra</div><div class="testi-role">Student SMAN 1 KALIANDA</div></div></div></div>
+        <div class="testi-card"><div class="testi-stars">★★★★★</div><p class="testi-text">"Hasil yang sangat memuaskan."</p><div class="testi-author"><img src="foto_shv.jpeg" alt="foto shv" class="testi-img"><div><div class="testi-name">Sheva Iqbal</div><div class="testi-role">Student SMAN 1 KALIANDA</div></div></div></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="page" id="page-contact">
+      <div class="section-label">Hubungi Saya</div>
+      <h2 class="heading">Mari <em>Bekerja Sama</em></h2>
+      <div class="contact-grid">
+        <div class="contact-info">
+          <p>Saya senang anda dapat mengunjungi Portofolio saya. Jika anda punya pertanyaan, saran, atau ingin kolaborasi, silahkan hubungi saya.</p>
+          <div class="contact-details">
+            <div class="contact-row"><span class="contact-lbl">Email</span><a href="mailto:nurilsmansaka@gmail.com" class="contact-val">nurilsmansaka@gmail.com</a></div>
+            <div class="contact-row"><span class="contact-lbl">Phone</span><a href="tel:+6281396663228" class="contact-val">+081396663228</a></div>
+            <div class="contact-row"><span class="contact-lbl">Location</span><span class="contact-val">Kalianda, Lampung Selatan</span></div>
+          </div>
+          <div class="socials">
+            <a href="https://linkedin.com" target="_blank" rel="noopener" class="soc-link">LinkedIn</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener" class="soc-link">Twitter</a>
+            <a href="https://dribbble.com" target="_blank" rel="noopener" class="soc-link">Dribbble</a>
+            <a href="https://github.com" target="_blank" rel="noopener" class="soc-link">GitHub</a>
+          </div>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <div class="form-row"><label for="name">Name</label><input type="text" id="name" name="name" required></div>
+          <div class="form-row"><label for="email">Email</label><input type="email" id="email" name="email" required></div>
+          <div class="form-row"><label for="subject">Subject</label><input type="text" id="subject" name="subject" required></div>
+          <div class="form-row"><label for="message">Message</label><textarea id="message" name="message" rows="4" required></textarea></div>
+          <button type="submit" class="form-submit"><span>Send Message</span></button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('loading').classList.add('hidden'), 1200);
+  });
+
+  function navigate(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn, .mob-nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.querySelectorAll('[data-page="' + pageId + '"]').forEach(b => b.classList.add('active'));
+    document.getElementById('mobileDrawer').classList.remove('open');
+    document.getElementById('page-' + pageId).scrollTop = 0;
+  }
+
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileDrawer').classList.toggle('open');
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.port-item').forEach(item => {
+        item.style.display = (filter === 'all' || item.dataset.cat === filter) ? 'block' : 'none';
+      });
+    });
+  });
+
+  document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('.form-submit span');
+    btn.textContent = 'Message Sent ✓';
+    e.target.reset();
+    setTimeout(() => btn.textContent = 'Send Message', 3000);
+  });
+</script>
+</body>
+</html>
